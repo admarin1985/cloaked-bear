@@ -118,7 +118,6 @@ services:
             - @doctrine.orm.entity_manager
             - @logger
             - @event_dispatcher
-            - @security.context
 
     buseta.bodega.salidabodega.manager:
         class: Buseta\BodegaBundle\Manager\SalidaBodegaManager
@@ -126,13 +125,12 @@ services:
             - @doctrine.orm.entity_manager
             - @logger
             - @event_dispatcher
-            - @security.context
+            - @security.token_storage
 
     #VALIDATORS
     bodega.constains_codigo.validador:
         class: Buseta\BodegaBundle\Validator\Constraints\ContainsCodigoValidator
         arguments:
-            - @security.context
             - @doctrine.orm.entity_manager
         tags:
             - {name: validator.constraint_validator, alias: contains_codigo_validator}
@@ -140,7 +138,6 @@ services:
     bodega.validar_serial.validador:
         class: Buseta\BodegaBundle\Validator\Constraints\ValidarSerialValidator
         arguments:
-            - @security.context
             - @doctrine.orm.entity_manager
             - @buseta.bodega.generadorseriales
         tags:
@@ -149,7 +146,6 @@ services:
     bodega.validar_maxmin.validador:
         class: Buseta\BodegaBundle\Validator\Constraints\ValidarMaxMinValidator
         arguments:
-            - @security.context
             - @doctrine.orm.entity_manager
         tags:
             - {name: validator.constraint_validator, alias: validar_maxmin_validator}

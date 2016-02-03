@@ -12,7 +12,7 @@ use Buseta\BodegaBundle\Entity\InventarioFisicoLinea;
 use Buseta\BodegaBundle\Event\FilterBitacoraEvent;
 use Buseta\BodegaBundle\Event\BitacoraEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Buseta\BodegaBundle\Exceptions\NotFoundElementException;
 
 
@@ -38,28 +38,20 @@ class MovimientoManager
      */
     private $event_dispacher;
 
-    /**
-     * @var \Symfony\Component\Security\Core\SecurityContext
-     */
-    private $security_context;
-
 
     /**
-     * @param ObjectManager $em
-     * @param Logger $logger
+     * @param ObjectManager            $em
+     * @param Logger                   $logger
      * @param EventDispatcherInterface $event_dispacher
-     * @param SecurityContext $security_context
      */
     function __construct(
         ObjectManager $em,
         Logger $logger,
-        EventDispatcherInterface $event_dispacher,
-        SecurityContext $security_context
+        EventDispatcherInterface $event_dispacher
     ) {
         $this->em = $em;
         $this->logger = $logger;
         $this->event_dispacher = $event_dispacher;
-        $this->security_context = $security_context;
     }
 
     /**
@@ -70,14 +62,11 @@ class MovimientoManager
      */
     public function completar($id)
     {
-
         try {
-
             /** @var \Buseta\BodegaBundle\Entity\Movimiento $movimiento */
             /** @var \Buseta\BodegaBundle\Entity\MovimientosProductos $linea */
 
             $movimiento = $this->em->getRepository('BusetaBodegaBundle:Movimiento')->find($id);
-
             if (!$movimiento) {
                 throw new NotFoundElementException('Unable to find Movimiento entity.');
             }
@@ -91,6 +80,7 @@ class MovimientoManager
                 if ($result !== true ) {
                     //borramos los cambios en el entity manager
                     $this->em->clear();
+
                     return $error = $result;
                 }
 
@@ -100,6 +90,7 @@ class MovimientoManager
                 if ($result !== true ) {
                     //borramos los cambios en el entity manager
                     $this->em->clear();
+
                     return $error = $result;
                 }
             }
@@ -108,13 +99,12 @@ class MovimientoManager
             //tanto en la bitacora almacen como en la bitacora de seriales
             //es el unico flush que se hace.
             $this->em->flush();
-            return true;
 
+            return true;
         } catch (\Exception $e) {
             $this->logger->error(sprintf('Ha ocurrido un error al completar el movimiento : %s', $e->getMessage()));
+
             return $error = 'Ha ocurrido un error al completar el movimiento entre almacenes';
         }
-
     }
-
 }

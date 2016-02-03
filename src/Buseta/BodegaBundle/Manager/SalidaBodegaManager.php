@@ -9,6 +9,7 @@ use Symfony\Bridge\Monolog\Logger;
 use Buseta\BodegaBundle\Entity\SalidaBodega;
 use Buseta\BodegaBundle\Event\FilterBitacoraEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\SecurityContext;
 use Buseta\BodegaBundle\Exceptions\NotFoundElementException;
 
@@ -34,27 +35,27 @@ class SalidaBodegaManager
     private $event_dispacher;
 
     /**
-     * @var \Symfony\Component\Security\Core\SecurityContext
+     * @var \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage
      */
-    private $security_context;
+    private $tokenStorage;
 
 
     /**
-     * @param ObjectManager $em
-     * @param Logger $logger
+     * @param ObjectManager            $em
+     * @param Logger                   $logger
      * @param EventDispatcherInterface $event_dispacher
-     * @param SecurityContext $security_context
+     * @param TokenStorage          $tokenStorage
      */
     function __construct(
         ObjectManager $em,
         Logger $logger,
         EventDispatcherInterface $event_dispacher,
-        SecurityContext $security_context
+        TokenStorage $tokenStorage
     ) {
         $this->em = $em;
         $this->logger = $logger;
         $this->event_dispacher = $event_dispacher;
-        $this->security_context = $security_context;
+        $this->tokenStorage = $tokenStorage;
     }
 
     /**
@@ -142,7 +143,7 @@ class SalidaBodegaManager
             }
 
             //Cambia el estado de Procesado a Completado e incorpora otros datos
-            $username = $this->security_context->getToken()->getUser()->getUsername();
+            $username = $this->tokenStorage->getToken()->getUser()->getUsername();
             $salidaBodega->setCreatedBy($username);
             $salidaBodega->setMovidoBy($username);
             $salidaBodega->setFecha($fechaSalidaBodega = new \DateTime());
