@@ -1,30 +1,30 @@
 productotope:
-    pattern:  /
+    path:  /
     defaults: { _controller: "BusetaBodegaBundle:ProductoTope:index" }
 
 productotope_show:
-    pattern:  /{id}/show
+    path:  /{id}/show
     defaults: { _controller: "BusetaBodegaBundle:ProductoTope:show" }
 
 productotope_new:
-    pattern:  /new
+    path:  /new
     defaults: { _controller: "BusetaBodegaBundle:ProductoTope:new" }
 
 productotope_create:
-    pattern:  /create
+    path:  /create
     defaults: { _controller: "BusetaBodegaBundle:ProductoTope:create" }
-    requirements: { _method: post }
+    requirements: { methods: post }
 
 productotope_edit:
-    pattern:  /{id}/edit
+    path:  /{id}/edit
     defaults: { _controller: "BusetaBodegaBundle:ProductoTope:edit" }
 
 productotope_update:
-    pattern:  /{id}/update
+    path:  /{id}/update
     defaults: { _controller: "BusetaBodegaBundle:ProductoTope:update" }
-    requirements: { _method: post|put }
+    requirements: { methods: post|put }
 
 productotope_delete:
-    pattern:  /{id}/delete
+    path:  /{id}/delete
     defaults: { _controller: "BusetaBodegaBundle:ProductoTope:delete" }
-    requirements: { _method: get|post|delete }
+    requirements: { methods: get|post|delete }
