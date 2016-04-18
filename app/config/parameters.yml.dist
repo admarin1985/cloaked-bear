@@ -14,3 +14,7 @@ parameters:
 
     # Easy Admin Nomenclators CSS Assets
     nomenclator.assets.css: 'bundles/busetanomenclador/css/admin.css'
+
+
+###Base Datos Testing
+    testing_database_name: buses.taller.test
