@@ -85,8 +85,13 @@
                 </td>
                 <td style="width: 18% !important; text-align: center;">
                     <div class="btn-group">
+                        {% if is_granted('show', entity) %}
                         <a class="btn btn-success btn-xs" href="{{ path('movimiento_show', { 'id': entity.id }) }}"><i
                                     class="fa fa-search"> Mostrar</i></a>
+                        {% endif %}
+                        {% if is_granted('edit', entity) and entity.estadodocumento == 'BO' %}
+                            <a class="btn btn-primary btn-xs" href="{{ path('movimiento_edit', { 'id': entity.id }) }}"> Editar</a>
+                        {% endif %}
                     </div>
                 </td>
             </tr>
@@ -152,6 +157,11 @@
             fechaFin.on('dp.change', function (e) {
                 fechaInicio.data("DateTimePicker").maxDate(e.date);
             });
+            $('#buseta_movimiento_filter_almacenOrigen').chosen();
+            $('#buseta_movimiento_filter_almacenDestino').chosen();
+            $('#buseta_movimiento_filter_producto').chosen();
+            $('#buseta_movimiento_filter_estado').chosen();
+
 
         });
     </script>

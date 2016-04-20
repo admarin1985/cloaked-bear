@@ -137,6 +137,9 @@ easy_admin:
         cajaChica:
             class: Buseta\NomencladorBundle\Entity\CajaChica
             label: 'Caja Chica'
+        categoriaProducto:
+            class: Buseta\BodegaBundle\Entity\CategoriaProducto
+            label: 'Categoría Producto'
         color:
             class: Buseta\NomencladorBundle\Entity\Color
             label: 'Color'
@@ -276,6 +279,27 @@ hatuey_soft_security:
 #            almacen:
 #                    class: Buseta\BodegaBundle\Entity\Almacen
 #            usuario: Buseta\TallerBundle\Entity\Usuario
+            albaran:
+                    class: Buseta\BodegaBundle\Entity\Albaran
+                    rules: []
+            inventariofisico:
+                    class: Buseta\BodegaBundle\Entity\InventarioFisico
+                    rules: []
+            salidabodega:
+                    class: Buseta\BodegaBundle\Entity\SalidaBodega
+                    rules: []
+            producto:
+                    class: Buseta\BodegaBundle\Entity\Producto
+                    rules: []
+            pedidocompra:
+                    class: Buseta\BodegaBundle\Entity\PedidoCompra
+                    rules: []
+            almacen:
+                    class: Buseta\BodegaBundle\Entity\Almacen
+            movimiento:
+                    class: Buseta\BodegaBundle\Entity\Movimiento
+                    rules: []
+
 
 #    acl:
 #        entities:

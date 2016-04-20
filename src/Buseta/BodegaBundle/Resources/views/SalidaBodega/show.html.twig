@@ -4,6 +4,14 @@
 
 {% block header 'Ver Datos de Salida de Bodega' %}
 
+{% block header_right %}
+    {% from '@BusetaTemplate/Macros/macros.html.twig' import documentState %}
+
+    <h4 class="pull-right">
+        {{ documentState(entity.estadodocumento, 'BusetaBodegaBundle') }}
+    </h4>
+{% endblock %}
+
 {% block area_trabajo %}
 
     <table class="table table-striped" style="font-size: 16px;">
@@ -82,7 +90,9 @@
 
     <div class="form-actions">
         {% if entity.estadodocumento == 'BO' %}
-            <a class="btn btn-primary" href="{{ path('salidabodega_edit', { 'id': entity.id }) }}"> Editar</a>
+            {% if is_granted('edit', entity) %}
+                <a class="btn btn-primary" href="{{ path('salidabodega_edit', { 'id': entity.id }) }}"> Editar</a>
+            {% endif %}
         {% endif %}
         {% if entity.estadodocumento == 'PR' %}
             <a class="btn btn-primary" href="{{ path('completarSalidaBodega', { 'id': entity.id }) }}"> Completar Proceso</a>
@@ -92,8 +102,10 @@
         <a class="btn btn-primary" href="{{ path('salidabodega') }}"> Listado</a>
 
         {% if entity.estadodocumento == 'BO' %}
-            <a href="#delete" data-href="{{ path('salidabodega_delete', {'id': entity.id}) }}" class="btn btn-danger">
-                <span class="glyphicon glyphicon-trash"></span> {{ 'actions.delete' | trans({}, 'BusetaBodegaBundle') }}</a>
+            {% if is_granted('delete', entity) %}
+                <a href="#delete" data-href="{{ path('salidabodega_delete', {'id': entity.id}) }}" class="btn btn-danger">
+                    <span class="glyphicon glyphicon-trash"></span> {{ 'actions.delete' | trans({}, 'BusetaBodegaBundle') }}</a>
+            {% endif %}
         {% endif %}
     </div>
 

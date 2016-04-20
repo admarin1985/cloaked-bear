@@ -80,6 +80,7 @@ class SalidaBodega
      * @var string
      *
      * @ORM\Column(name="controlEntregaMaterial", type="string")
+     * @Assert\NotBlank
      */
     private $controlEntregaMaterial;
 
@@ -140,9 +141,23 @@ class SalidaBodega
     }
 
     /**
+     * Set id
+     *
+     * @param integer $id
+     * @return SalidaBodega
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+
+    /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -158,14 +173,14 @@ class SalidaBodega
     public function setFecha($fecha)
     {
         $this->fecha = $fecha;
-    
+
         return $this;
     }
 
     /**
      * Get fecha
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getFecha()
     {
@@ -181,14 +196,14 @@ class SalidaBodega
     public function setTipoOT($tipoOT)
     {
         $this->tipoOT = $tipoOT;
-    
+
         return $this;
     }
 
     /**
      * Get tipoOT
      *
-     * @return string 
+     * @return string
      */
     public function getTipoOT()
     {
@@ -204,14 +219,14 @@ class SalidaBodega
     public function setControlEntregaMaterial($controlEntregaMaterial)
     {
         $this->controlEntregaMaterial = $controlEntregaMaterial;
-    
+
         return $this;
     }
 
     /**
      * Get controlEntregaMaterial
      *
-     * @return string 
+     * @return string
      */
     public function getControlEntregaMaterial()
     {
@@ -227,14 +242,14 @@ class SalidaBodega
     public function setObservaciones($observaciones)
     {
         $this->observaciones = $observaciones;
-    
+
         return $this;
     }
 
     /**
      * Get observaciones
      *
-     * @return string 
+     * @return string
      */
     public function getObservaciones()
     {
@@ -250,14 +265,14 @@ class SalidaBodega
     public function setMovidoBy($movidoBy)
     {
         $this->movidoBy = $movidoBy;
-    
+
         return $this;
     }
 
     /**
      * Get movidoBy
      *
-     * @return string 
+     * @return string
      */
     public function getMovidoBy()
     {
@@ -273,14 +288,14 @@ class SalidaBodega
     public function setCreated($created)
     {
         $this->created = $created;
-    
+
         return $this;
     }
 
     /**
      * Get created
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreated()
     {
@@ -296,14 +311,14 @@ class SalidaBodega
     public function setCreatedBy($createdBy)
     {
         $this->createdBy = $createdBy;
-    
+
         return $this;
     }
 
     /**
      * Get createdBy
      *
-     * @return string 
+     * @return string
      */
     public function getCreatedBy()
     {
@@ -319,14 +334,14 @@ class SalidaBodega
     public function setUpdated($updated)
     {
         $this->updated = $updated;
-    
+
         return $this;
     }
 
     /**
      * Get updated
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdated()
     {
@@ -342,14 +357,14 @@ class SalidaBodega
     public function setUpdatedBy($updatedBy)
     {
         $this->updatedBy = $updatedBy;
-    
+
         return $this;
     }
 
     /**
      * Get updatedBy
      *
-     * @return string 
+     * @return string
      */
     public function getUpdatedBy()
     {
@@ -365,14 +380,14 @@ class SalidaBodega
     public function setAlmacenOrigen(\Buseta\BodegaBundle\Entity\Bodega $almacenOrigen = null)
     {
         $this->almacenOrigen = $almacenOrigen;
-    
+
         return $this;
     }
 
     /**
      * Get almacenOrigen
      *
-     * @return \Buseta\BodegaBundle\Entity\Bodega 
+     * @return \Buseta\BodegaBundle\Entity\Bodega
      */
     public function getAlmacenOrigen()
     {
@@ -388,14 +403,14 @@ class SalidaBodega
     public function setAlmacenDestino(\Buseta\BodegaBundle\Entity\Bodega $almacenDestino = null)
     {
         $this->almacenDestino = $almacenDestino;
-    
+
         return $this;
     }
 
     /**
      * Get almacenDestino
      *
-     * @return \Buseta\BodegaBundle\Entity\Bodega 
+     * @return \Buseta\BodegaBundle\Entity\Bodega
      */
     public function getAlmacenDestino()
     {
@@ -411,14 +426,14 @@ class SalidaBodega
     public function setCentroCosto(\Buseta\BusesBundle\Entity\Autobus $centroCosto = null)
     {
         $this->centroCosto = $centroCosto;
-    
+
         return $this;
     }
 
     /**
      * Get centroCosto
      *
-     * @return \Buseta\BusesBundle\Entity\Autobus 
+     * @return \Buseta\BusesBundle\Entity\Autobus
      */
     public function getCentroCosto()
     {
@@ -434,14 +449,14 @@ class SalidaBodega
     public function setResponsable(\Buseta\BodegaBundle\Entity\Tercero $responsable = null)
     {
         $this->responsable = $responsable;
-    
+
         return $this;
     }
 
     /**
      * Get responsable
      *
-     * @return \Buseta\BodegaBundle\Entity\Tercero 
+     * @return \Buseta\BodegaBundle\Entity\Tercero
      */
     public function getResponsable()
     {
@@ -457,14 +472,14 @@ class SalidaBodega
     public function setOrdenTrabajo(\Buseta\TallerBundle\Entity\OrdenTrabajo $ordenTrabajo = null)
     {
         $this->ordenTrabajo = $ordenTrabajo;
-    
+
         return $this;
     }
 
     /**
      * Get ordenTrabajo
      *
-     * @return \Buseta\TallerBundle\Entity\OrdenTrabajo 
+     * @return \Buseta\TallerBundle\Entity\OrdenTrabajo
      */
     public function getOrdenTrabajo()
     {
@@ -480,9 +495,9 @@ class SalidaBodega
     public function addSalidasProducto(\Buseta\BodegaBundle\Entity\SalidaBodegaProducto $salidasProductos)
     {
         $salidasProductos->setSalida($this);
-        
+
         $this->salidas_productos[] = $salidasProductos;
-    
+
         return $this;
     }
 
@@ -499,7 +514,7 @@ class SalidaBodega
     /**
      * Get salidas_productos
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getSalidasProductos()
     {
@@ -515,14 +530,14 @@ class SalidaBodega
     public function setEstadoDocumento($estadoDocumento)
     {
         $this->estado_documento = $estadoDocumento;
-    
+
         return $this;
     }
 
     /**
      * Get estado_documento
      *
-     * @return string 
+     * @return string
      */
     public function getEstadoDocumento()
     {

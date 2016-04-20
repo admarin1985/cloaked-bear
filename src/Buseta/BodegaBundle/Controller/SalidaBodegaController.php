@@ -10,9 +10,11 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Buseta\BodegaBundle\Entity\SalidaBodega;
+use Buseta\TallerBundle\Entity\OrdenNecesidadProducto;
 use Buseta\BodegaBundle\Form\Type\SalidaBodegaType;
 use Buseta\BodegaBundle\Extras\FuncionesExtras;
 use Symfony\Component\HttpFoundation\Response;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -41,6 +43,25 @@ class SalidaBodegaController extends Controller
         $manager = $this->get('buseta.bodega.salidabodega.manager');
         if ($manager->procesar($salidaBodega)){
             $this->get('session')->getFlashBag()->add('success', 'Se ha procesado la salida de bodega de forma correcta.');
+
+            $em = $this->get('doctrine.orm.entity_manager');
+            $salidaProductos = $em->getRepository('BusetaBodegaBundle:SalidaBodegaProducto')->findBySalida($salidaBodega);
+
+            foreach ($salidaProductos as $salidaProducto) {
+                $ordenNecesidad = $em->getRepository('BusetaTallerBundle:OrdenNecesidadProducto')
+                    ->findOneBySalidaBodegaProducto($salidaProducto);
+                if($ordenNecesidad == null)
+                {
+                    $ordenNecesidad = new OrdenNecesidadProducto();
+                    $ordenNecesidad->setSalidaBodegaProducto($salidaProducto);
+                    $ordenNecesidad->setOrdentrabajo($salidaBodega->getOrdenTrabajo());
+                }
+                $ordenNecesidad->setCantidad($salidaProducto->getCantidad());
+                $ordenNecesidad->setProducto($salidaProducto->getProducto());
+                $ordenNecesidad->setSeriales($salidaProducto->getSeriales());
+                $em->persist($ordenNecesidad);
+            }
+            $em->flush();
             return $this->redirect( $this->generateUrl('salidabodega_show', array( 'id' => $salidaBodega->getId())));
         }
 
@@ -172,6 +193,38 @@ class SalidaBodegaController extends Controller
     }
 
     /**
+     *
+     * @param Request $request
+     *
+     * @return Response
+     *
+     * @Route("/select_almacenOrigen_Productos", name="salidabodegas_ajax_almacenOrigen_Productos",
+     *   options={"expose": true})
+     * @Method({"GET"})
+     */
+    public function select_almacenOrigen_ProductosAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $almacenOrigenId = $request->query->get('almacenOrigen_id');
+        $almacenOrigen = $em->getRepository('BusetaBodegaBundle:Bodega')->findOneById($almacenOrigenId);
+        $productos = $em->getRepository('BusetaBodegaBundle:Producto')->findAll();
+        $fe = new FuncionesExtras();
+        $json = array();
+        foreach ($productos as $producto) {
+            $result = $fe->comprobarCantProductoAlmacen($producto, $almacenOrigen, 1, $em);
+
+            if ($result != "No existe") {
+                $json[] = array(
+                    'id' => $producto->getId(),
+                    'valor' => $producto->getNombre(),
+                );
+            }
+        }
+
+        return new Response(json_encode($json), 200);
+    }
+
+    /**
      * Lists all SalidaBodega entities.
      *
      * @param Request $request
@@ -219,115 +272,61 @@ class SalidaBodegaController extends Controller
      * @Route("/create", name="salidabodega_create")
      * @Method({"POST"})
      *
-     * @Breadcrumb(title="Crear Nueva Orden de Entrada", routeName="salidabodega_create")
+     * @Breadcrumb(title="Crear Nueva Salida de Bodega", routeName="salidabodega_create")
      */
     public function createAction(Request $request)
     {
         $entity = new SalidaBodega();
         $form = $this->createCreateForm($entity);
+
         $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->get('doctrine.orm.entity_manager');
+            try {
+                $em->persist($entity);
+                $em->flush();
 
-        if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $fechaSalidaBodega = new \DateTime();
+                $message = $this->get('translator')->trans('messages.create.success', array(), 'BusetaBodegaBundle');
+                if($request->isXmlHttpRequest()) {
+                    $form = $this->createEditForm($entity);
 
-            $request = $this->get('request');
-            $datos = $request->request->get('buseta_bodegabundle_salida_bodega');
+                    $view = $this->renderView('BusetaBodegaBundle:SalidaBodega:edit.html.twig', array(
+                        'edit_form' => $form->createView(),
+                        'entity' => $entity,
+                    ));
 
-            //Comparar la existencia de cantidad de productos disponibles en el almacen
-            //a partir de la solicitud de salidabodega de productos entre almacenes
-
-            $idAlmacenOrigen = $datos['almacenOrigen'];
-            $idAlmacenDestino = $datos['almacenDestino'];
-
-            if (isset($datos['salidas_productos'])) {
-
-                $salidabodegas = $datos['salidas_productos'];
-
-                $cantidadDisponible = 0;
-
-                foreach ($salidabodegas as $salidabodega) {
-                    $idProducto = $salidabodega['producto'];
-
-                    $producto = $em->getRepository('BusetaBodegaBundle:Producto')->find($idProducto);
-                    $almacen = $em->getRepository('BusetaBodegaBundle:Bodega')->find($idAlmacenOrigen);
-                    $cantidadProducto = $salidabodega['cantidad'];
-
-                    $fe = new FuncionesExtras();
-                    $cantidadDisponible = $fe->comprobarCantProductoAlmacen($producto, $almacen, $cantidadProducto,
-                        $em);
-
-                    //Comprobar la existencia del producto en la bodega seleccionada
-                    if ($cantidadDisponible === 'No existe') {
-
-                        //Volver al menu de de crear nuevo SalidaBodega
-                        $salidabodegasProductos = $this->createForm(new SalidaBodegaProductoType());
-
-                        $form = $this->createCreateForm($entity);
-                        $producto = $em->getRepository('BusetaBodegaBundle:Producto')->find($idProducto);
-                        $bodega = $em->getRepository('BusetaBodegaBundle:Bodega')->find($idAlmacenOrigen);
-
-                        $form->addError(new FormError("El producto '" . $producto->getNombre() . "' no existe en la bodega seleccionada"));
-
-                        return $this->render('BusetaBodegaBundle:SalidaBodega:new.html.twig', array(
-                            'entity' => $entity,
-                            'salidabodegasProductos' => $salidabodegasProductos->createView(),
-                            'form' => $form->createView(),
-                        ));
-                    } //Si no existe la cantidad solicitada en el almacen del producto seleccionado
-                    elseif ($cantidadDisponible < 0) {
-                        //Volver al menu de de crear nuevo SalidaBodega
-                        $salidabodegasProductos = $this->createForm(new SalidaBodegaProductoType());
-
-                        $form = $this->createCreateForm($entity);
-                        $producto = $em->getRepository('BusetaBodegaBundle:Producto')->find($idProducto);
-                        $bodega = $em->getRepository('BusetaBodegaBundle:Bodega')->find($idAlmacenOrigen);
-
-                        $form->addError(new FormError("No existe en la bodega '" . $bodega->getNombre() . "' la cantidad de productos solicitados para el producto: " . $producto->getNombre()));
-
-                        return $this->render('BusetaBodegaBundle:SalidaBodega:new.html.twig', array(
-                            'entity' => $entity,
-                            'salidabodegasProductos' => $salidabodegasProductos->createView(),
-                            'form' => $form->createView(),
-                        ));
-                    } //Si sí existe la cantidad del producto en la bodega seleccionada
-                    else {
-                        /*Antes se Actualizaban las Bitácora - AlmacenOrigen*/
-
-                        $almacenOrigen = $em->getRepository('BusetaBodegaBundle:Bodega')->find($idAlmacenOrigen);
-                        $almacenDestino = $em->getRepository('BusetaBodegaBundle:Bodega')->find($idAlmacenDestino);
-
-                        $centroCosto = $em->getRepository('BusetaBusesBundle:Autobus')->find($datos['centro_costo']);
-                        $ordenTrabajo = $em->getRepository('BusetaTallerBundle:OrdenTrabajo')->find($datos['orden_trabajo']);
-
-                        //Persistimos los salidabodegas
-                        $entity->setCreatedBy($this->getUser()->getUsername());
-                        $entity->setMovidoBy($this->getUser()->getUsername());
-                        $entity->setCentroCosto($centroCosto);
-                        $entity->setControlEntregaMaterial($datos['control_entrega_material']);
-                        $entity->setObservaciones($datos['observaciones']);
-                        $entity->setTipoOT($datos['tipo_ot']);
-                        $entity->setOrdenTrabajo($ordenTrabajo);
-                        $entity->setAlmacenOrigen($almacenOrigen);
-                        $entity->setAlmacenDestino($almacenDestino);
-                        $entity->setFecha($fechaSalidaBodega);
-                        //el estado es
-                        $em->persist($entity);
-                        $em->flush();
-                    }
+                    return new JsonResponse(array(
+                        'message' => $message,
+                        'view' => $view,
+                    ), 201);
                 }
 
-                return $this->redirect($this->generateUrl('salidabodega_show', array('id' => $entity->getId())));
-            }
+                $this->get('session')->getFlashBag()->add('success', $message);
 
+                return $this->redirect($this->generateUrl('salidabodega_show', array('id' => $entity->getId())));
+            } catch (\Exception $e) {
+                $error = $this->get('translator')->trans('messages.create.error.%key%', array('key' => 'SalidaBodega'), 'BusetaBodegaBundle');
+                $this->get('logger')->addCritical(sprintf('%s .%s', $error, $e->getMessage()));
+
+                if ($request->isXmlHttpRequest()) {
+                    $form->addError(new FormError($error));
+                } else {
+                    $this->get('session')->getFlashBag()->add('danger', $error);
+                }
+            }
         }
 
-        $form->addError(new FormError("Debe realizarse al menos una Salida de Producto"));
-
-        return $this->render('BusetaBodegaBundle:SalidaBodega:new.html.twig', array(
-            'entity' => $entity,
+        $view = $this->renderView('BusetaBodegaBundle:SalidaBodega:new.html.twig', array(
             'form' => $form->createView(),
         ));
+
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse(array(
+                'view' => $view,
+            ));
+        }
+
+        return new Response($view);
     }
 
     /**
@@ -354,7 +353,7 @@ class SalidaBodegaController extends Controller
      *
      * @Route("/new", name="salidabodega_new", methods={"GET"})
      * @Method({"GET"})
-     *
+     * @Security("is_granted('create', 'Buseta\\BodegaBundle\\Entity\\SalidaBodega')")
      * @Breadcrumb(title="Crear Nueva Salida de Bodega", routeName="salidabodega_new")
      */
     public function newAction()
@@ -392,20 +391,20 @@ class SalidaBodegaController extends Controller
      *
      * @Route("/{id}/show", name="salidabodega_show", options={"expose":true})
      * @Method({"GET"})
-     *
+     * @Security("is_granted('show', salidaBodega)")
      * @Breadcrumb(title="Ver Datos de Salida de Bodega", routeName="salidabodega_show", routeParameters={"id"})
      */
-    public function showAction($id)
+    public function showAction(SalidaBodega $salidaBodega)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('BusetaBodegaBundle:SalidaBodega')->find($id);
+        $entity = $em->getRepository('BusetaBodegaBundle:SalidaBodega')->find($salidaBodega->getId());
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find SalidaBodega entity.');
         }
 
-        $deleteForm = $this->createDeleteForm($id);
+        $deleteForm = $this->createDeleteForm($salidaBodega->getId());
 
         return $this->render('BusetaBodegaBundle:SalidaBodega:show.html.twig', array(
             'entity'      => $entity,
@@ -418,28 +417,28 @@ class SalidaBodegaController extends Controller
      *
      * @Route("/{id}/edit", name="salidabodega_edit")
      * @Method({"GET"})
-     *
+     * @Security("is_granted('edit', salidaBodega)")
      * @Breadcrumb(title="Modificar Salida de Bodega", routeName="salidabodega_edit", routeParameters={"id"})
      */
-    public function editAction($id)
+    public function editAction(SalidaBodega $salidaBodega)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('BusetaBodegaBundle:SalidaBodega')->find($id);
+        $entity = $em->getRepository('BusetaBodegaBundle:SalidaBodega')->find($salidaBodega->getId());
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find SalidaBodega entity.');
         }
 
-        $salidabodegasProductos = $this->createForm(new SalidaBodegaProductoType());
+        //$salidabodegasProductos = $this->createForm(new SalidaBodegaProductoType());
 
         $editForm = $this->createEditForm($entity);
-        $deleteForm = $this->createDeleteForm($id);
+        $deleteForm = $this->createDeleteForm($salidaBodega->getId());
 
         return $this->render('BusetaBodegaBundle:SalidaBodega:edit.html.twig', array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
-            'salidabodegasProductos'   => $salidabodegasProductos->createView(),
+            //'salidabodegasProductos'   => $salidabodegasProductos->createView(),
             'delete_form' => $deleteForm->createView(),
         ));
     }
@@ -502,6 +501,7 @@ class SalidaBodegaController extends Controller
      * Deletes a SalidaBodega entity.
      *
      * @Route("/{id}/delete", name="salidabodega_delete")
+     * @Security("is_granted('delete', salidaBodega)")
      * @Method({"POST", "DELETE", "GET"})
      */
     public function deleteAction(SalidaBodega $salidaBodega, Request $request)
@@ -564,5 +564,42 @@ class SalidaBodegaController extends Controller
             ->setMethod('DELETE')
             ->getForm()
             ;
+    }
+
+    /**
+     * Updated automatically select Seriales when change select Producto.
+     *
+     * @param Request $request
+     *
+     * @return Response
+     *
+     * @Route("/select_product_seriales", name="salidabodegaproducto_ajax_seriales",
+     *   options={"expose": true})
+     * @Method({"GET"})
+     */
+    public function selectSerialesAction(Request $request)
+    {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return new Response('Acceso Denegado', 403);
+        }
+
+        if (!$request->isXmlHttpRequest()) {
+            return new Response('No es una petición Ajax', 500);
+        }
+
+        $em = $this->get('doctrine.orm.entity_manager');
+        $almacen = $em->getRepository('BusetaBodegaBundle:Bodega')->find($request->query->get('stock'));
+        $producto = $em->getRepository('BusetaBodegaBundle:Producto')->find($request->query->get('product'));
+        $fune = new FuncionesExtras();
+        $seriales = $fune->getListaSerialesTeoricoEnAlmacen($producto,$almacen, $em);
+        $json = array();
+        foreach ($seriales as $serial) {
+            $json[] = array(
+                'id' => $serial,
+                'valor' => $serial,
+            );
+        }
+
+        return new Response(json_encode($json), 200);
     }
 }

@@ -8,6 +8,7 @@ use Buseta\TallerBundle\Event\ReporteEvents;
 use Buseta\TallerBundle\Event\OrdenTrabajoEvents;
 use Buseta\TallerBundle\Form\Filter\OrdenTrabajoFilter;
 use Buseta\TallerBundle\Form\Model\OrdenTrabajoFilterModel;
+use Buseta\TallerBundle\Form\Model\OrdenTrabajoModel;
 use Buseta\TallerBundle\Form\Type\TareaAdicionalType;
 use Buseta\TallerBundle\Manager\MantenimientoPreventivoManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -73,60 +74,56 @@ class OrdenTrabajoController extends Controller
     }
 
     /**
-     * Creates a new OrdenTrabajo entity.
+     * Creates a new OrdenTrabajoM entity.
      * @Route("/create", name="ordentrabajo_create")
      * @Method("POST")
      * @Breadcrumb(title="Crear Nueva Orden de Trabajo", routeName="ordentrabajo_create")
-     * @Security("is_granted('CREATE', 'Buseta\\TallerBundle\\Entity\\OrdenTrabajo')")
      */
+
     public function createAction(Request $request)
     {
-        $entity = new OrdenTrabajo();
-        $form = $this->createCreateForm($entity);
+        $ordenTrabajoModel = new OrdenTrabajoModel();
+        $form = $this->createCreateForm($ordenTrabajoModel);
 
         $form->handleRequest($request);
-        if ($form->isValid()) {
-            $em = $this->get('doctrine.orm.entity_manager');
+        if ($form->isSubmitted() && $form->isValid()) {
+            $trans  = $this->get('translator');
 
-            try {
-                $em->persist($entity);
-                $em->flush();
+            $ordenTrabajoManager = $this->get('buseta.taller.ordentrabajo.manager');
 
-                $this->get('session')->getFlashBag()
-                    ->add('success', 'Se ha creado la Orden de Trabajo de forma satisfactoria.');
+            if ($ordenTrabajo = $ordenTrabajoManager->crear($ordenTrabajoModel)) {
+                $this->get('session')->getFlashBag()->add('success',
+                    $trans->trans(
+                        'messages.create.success',
+                        array(),
+                        'BusetaTallerBundle'
+                    )
+                );
 
-                return $this->redirect($this->generateUrl('ordentrabajo_show', array('id' => $entity->getId())));
-            } catch (\Exception $e) {
-                $this->get('logger')
-                    ->addCritical(sprintf('Ha ocurrido un error creando la Orden de Trabajo. Detalles: %s',
-                        $e->getMessage()));
-
-                $this->get('session')->getFlashBag()
-                    ->add('danger', 'Ha ocurrido un error creando la Orden de Trabajo.');
+                return $this->redirect($this->generateUrl('ordentrabajo_show', array('id' => $ordenTrabajo->getId())));
+            } else {
+                $this->get('session')->getFlashBag()->add('danger', 'Ha ocurrido un error al crear Orden de Trabajo');
             }
         }
 
-        return $this->render('BusetaTallerBundle:OrdenTrabajo:new.html.twig', array(
-            'entity' => $entity,
-            'form' => $form->createView(),
+        return $this->render('@BusetaTaller/OrdenTrabajo/new.html.twig', array(
+            'form' => $form->createView()
         ));
     }
 
     /**
      * Creates a form to create a OrdenTrabajo entity.
      *
-     * @param OrdenTrabajo $entity The entity
+     * @param OrdenTrabajoModel $entity The entity
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createCreateForm(OrdenTrabajo $entity)
+    private function createCreateForm(OrdenTrabajoModel $entity)
     {
         $form = $this->createForm('buseta_tallerbundle_ordentrabajo', $entity, array(
             'action' => $this->generateUrl('ordentrabajo_create'),
             'method' => 'POST',
         ));
-
-        //$form->add('submit', 'submit', array('label' => 'Create'));
 
         return $form;
     }
@@ -139,16 +136,10 @@ class OrdenTrabajoController extends Controller
      */
     public function newAction()
     {
-        $sequenceManager = $this->get('hatuey_soft.sequence.manager');
         $entity = new OrdenTrabajo();
-
-        if ($sequenceManager->hasSequence(ClassUtils::getRealClass($entity))) {
-            $entity->setNumero($sequenceManager->getNextValue('ot_seq'));
-        }
-
         $tarea_adicional = $this->createForm(new TareaAdicionalType());
 
-        $form = $this->createCreateForm($entity);
+        $form   = $this->createCreateForm(new OrdenTrabajoModel());
 
         return $this->render('BusetaTallerBundle:OrdenTrabajo:new.html.twig', array(
             'entity' => $entity,
@@ -161,7 +152,7 @@ class OrdenTrabajoController extends Controller
      * Finds and displays a OrdenTrabajo entity.
      * @Route("/{id}/show", name="ordentrabajo_show")
      * @Breadcrumb(title="Ver Datos de Orden de Trabajo", routeName="ordentrabajo_show", routeParameters={"id"})
-     * @Security("is_granted('VIEW', ordenTrabajo)")
+     * @Security("is_granted('SHOW', ordenTrabajo)")
      */
     public function showAction(OrdenTrabajo $ordenTrabajo)
     {
@@ -181,11 +172,9 @@ class OrdenTrabajoController extends Controller
      */
     public function editAction(OrdenTrabajo $ordenTrabajo)
     {
-        $em = $this->get('doctrine.orm.entity_manager');
-
         $tarea_adicional = $this->createForm(new TareaAdicionalType());
 
-        $editForm = $this->createEditForm($ordenTrabajo);
+        $editForm = $this->createEditForm(new OrdenTrabajoModel($ordenTrabajo));
         $deleteForm = $this->createDeleteForm($ordenTrabajo->getId());
 
         return $this->render('BusetaTallerBundle:OrdenTrabajo:edit.html.twig', array(
@@ -199,18 +188,16 @@ class OrdenTrabajoController extends Controller
     /**
      * Creates a form to edit a OrdenTrabajo entity.
      *
-     * @param OrdenTrabajo $entity The entity
+     * @param OrdenTrabajoModel $entity The entity
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createEditForm(OrdenTrabajo $entity)
+    private function createEditForm(OrdenTrabajoModel $entity)
     {
         $form = $this->createForm('buseta_tallerbundle_ordentrabajo', $entity, array(
             'action' => $this->generateUrl('ordentrabajo_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
-
-        //$form->add('submit', 'submit', array('label' => 'Update'));
 
         return $form;
     }
@@ -525,7 +512,7 @@ class OrdenTrabajoController extends Controller
         }
 
         if ($report === null) {
-            if($ordenTrabajo->getEstado()== 'BO') {
+            if($ordenTrabajo->getEstado()== 'DRAFT') {
                 $ordenTrabajoEvent = new FilterOrdenTrabajoEvent($ordenTrabajo);
                 $ordenTrabajoEvent->setOrden($ordenTrabajo);
                 $eventDispatcher->dispatch(OrdenTrabajoEvents::CAMBIAR_ESTADO_PROCESADO, $ordenTrabajoEvent);
@@ -556,6 +543,62 @@ class OrdenTrabajoController extends Controller
                 $eventDispatcher->dispatch(OrdenTrabajoEvents::CAMBIAR_ESTADO_COMPLETADO, $ordenTrabajoEvent);
             }
         }
+
+        return $this->redirect($this->generateUrl('ordentrabajo'));
+    }
+
+    public function cambiarEstadoOrdenAction(OrdenTrabajo $ordenTrabajo)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $eventDispatcher = $this->get('event_dispatcher');
+        if ($ordenTrabajo->getDiagnostico() !== null && $ordenTrabajo->getDiagnostico()->getReporte() !== null) {
+            $report = $ordenTrabajo->getDiagnostico()->getReporte();
+        } else {
+            $report = null;
+        }
+
+        if($ordenTrabajo->getEstado() == 'DRAFT') {
+            $necesidadProductos = $em->getRepository('BusetaTallerBundle:OrdenNecesidadProducto')->findByOrdentrabajo($ordenTrabajo);
+            if(count($necesidadProductos) > 0) {
+                $salidaBodega = new SalidaBodega();
+                $salidaBodega->setCentroCosto($ordenTrabajo->getAutobus());
+                $salidaBodega->setTipoOT($ordenTrabajo->getPrioridad());
+                $salidaBodega->setOrdenTrabajo($ordenTrabajo);
+                $salidaBodega->setFecha(new \DateTime());
+                $salidaBodega->setControlEntregaMaterial("Entrega por orden " + $ordenTrabajo->getNumero());
+                $salidaBodega->setResponsable($ordenTrabajo->getRealizadaPor());
+                foreach ($necesidadProductos as $necesidadProducto) {
+                    $salidaBodegaProducto = new SalidaBodegaProducto();
+                    $salidaBodegaProducto->setProducto($necesidadProducto->getProducto());
+                    $salidaBodegaProducto->setCantidad($necesidadProducto->getCantidad());
+                    $salidaBodegaProducto->setSeriales($necesidadProducto->getSeriales());
+                    $salidaBodegaProducto->setSalida($salidaBodega);
+                    $necesidadProducto->setSalidaBodegaProducto($salidaBodegaProducto);
+                    $em->persist($salidaBodegaProducto);
+                    $em->persist($necesidadProducto);
+                    $em->flush();
+                }
+                $em->persist($salidaBodega);
+                $em->flush();
+            }
+            $ordenTrabajo->setEstado('PROCESS');
+        } else if($ordenTrabajo->getEstado()== 'PROCESS') {
+            $ordenTrabajo->setEstado('POSTED');
+        } else if($ordenTrabajo->getEstado()== 'POSTED') {
+            $ordenTrabajo->setEstado('COMPLETE');
+            if ($report != null) {
+                $reporteEvent = new FilterReporteEvent($report);
+                $reporteEvent->setReporte($report);
+
+                $ordenTrabajoEvent = new FilterOrdenTrabajoEvent($ordenTrabajo);
+                $ordenTrabajoEvent->setOrden($ordenTrabajo);
+
+                $eventDispatcher->dispatch(ReporteEvents::CAMBIAR_ESTADO_COMPLETADO, $reporteEvent);
+            }
+        }
+
+        $em->persist($ordenTrabajo);
+        $em->flush();
 
         return $this->redirect($this->generateUrl('ordentrabajo'));
     }
