@@ -48,8 +48,15 @@ class ServicioCombustibleModel
 
     /**
      * @var \Buseta\BusesBundle\Entity\Vehiculo
+     *
+     * @Assert\NotNull()
      */
     private $vehiculo;
+
+    /**
+     * @var string
+     */
+    private $boleta;
 
     /**
      * @var integer
@@ -72,6 +79,7 @@ class ServicioCombustibleModel
     {
         $servicioCombustible = new ServicioCombustible();
         $servicioCombustible->setCantidadLibros($this->getCantidadLibros());
+        $servicioCombustible->setBoleta($this->getBoleta());
         $servicioCombustible->setMarchamo1($this->getMarchamo1());
         $servicioCombustible->setMarchamo2($this->getMarchamo2());
 
@@ -204,5 +212,21 @@ class ServicioCombustibleModel
     public function setMarchamo2($marchamo2)
     {
         $this->marchamo2 = $marchamo2;
+    }
+
+    /**
+     * @param string $boleta
+     */
+    public function setBoleta($boleta)
+    {
+        $this->boleta = $boleta;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBoleta()
+    {
+        return $this->boleta;
     }
 }

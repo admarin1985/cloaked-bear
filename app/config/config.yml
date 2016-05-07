@@ -295,7 +295,8 @@ hatuey_soft_security:
                     class: Buseta\BodegaBundle\Entity\PedidoCompra
                     rules: []
             almacen:
-                    class: Buseta\BodegaBundle\Entity\Almacen
+                    class: Buseta\BodegaBundle\Entity\Bodega
+                    rules: []
             movimiento:
                     class: Buseta\BodegaBundle\Entity\Movimiento
                     rules: []
@@ -333,3 +334,8 @@ hatuey_soft_menu:
 services:
     fos_user.doctrine_registry:
         alias: doctrine
+
+buseta_combustible:
+    server:
+        address: "%recaudadora.boletas_api_server_hostname%"
+        port: "%recaudadora.boletas_api_server_port%"
