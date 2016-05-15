@@ -12,6 +12,7 @@
     {% if (filter_form.vars.value.combustible is null or filter_form.vars.value.combustible is empty)
     and (filter_form.vars.value.chofer is null or filter_form.vars.value.chofer is empty)
     and (filter_form.vars.value.vehiculo is null or filter_form.vars.value.vehiculo is empty)
+    and (filter_form.vars.value.estado is null or filter_form.vars.value.estado is empty)
     %}
         {% set display = 'display: none;' %}
         {% set headericon = 'glyphicon-chevron-right' %}
@@ -29,6 +30,7 @@
                 <div class="col-lg-4">{{ form_row(filter_form.combustible) }}</div>
                 <div class="col-lg-4">{{ form_row(filter_form.chofer) }}</div>
                 <div class="col-lg-4">{{ form_row(filter_form.vehiculo) }}</div>
+                <div class="col-lg-4">{{ form_row(filter_form.estado) }}</div>
             </div>
             {{ form_widget(filter_form._token) }}
 
@@ -60,6 +62,7 @@
                 <th>Chofer</th>
                 <th>Vehículo</th>
                 <th>Cantidad de Libros</th>
+                <th>Estado</th>
                 <th style="text-align: center">Acciones</th>
             </tr>
             </thead>
@@ -70,6 +73,14 @@
                     <td>{{ entity.chofer }}</td>
                     <td>{{ entity.vehiculo }}</td>
                     <td>{{ entity.cantidadLibros }}</td>
+                    {% if entity.estado == 'RV' %}
+                        {% set badge = 'success' %}
+                        {% set text_color = 'success' %}
+                    {% elseif entity.estado == 'SV' %}
+                        {% set badge = 'primary' %}
+                        {% set text_color = 'primary' %}
+                    {% endif %}
+                    <td class="text-{{ text_color }}"><span class="label label-{{ badge }}">{{ ('estado.' ~entity.estado) | trans({}, 'BusetaCombustibleBundle') | upper }}</span></td>
 
                     <td style="width: 24% !important; text-align: center;">
                         <div class="btn-group">

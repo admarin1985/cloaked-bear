@@ -1,0 +1,11 @@
+{% extends "BusetaEmpleadosBundle::layout.html.twig" %}
+
+{% block title block('header') %}
+
+{% block header 'Modificar Empleado' %}
+
+{% block area_trabajo %}
+
+    {% include '@BusetaEmpleados/TipoEmpleado/form_template.html.twig' with {'form': edit_form} %}
+
+{% endblock area_trabajo %}

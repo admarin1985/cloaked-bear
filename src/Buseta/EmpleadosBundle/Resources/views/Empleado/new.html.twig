@@ -1,0 +1,24 @@
+{% extends "BusetaEmpleadosBundle::layout.html.twig" %}
+
+{% block title block('header') %}
+
+{% block header 'Crear Nuevo Empleado' %}
+
+{% block area_trabajo %}
+
+    {% include '@BusetaEmpleados/Empleado/form_template.html.twig' with {'form': form} %}
+
+{% endblock area_trabajo %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script type="text/javascript">
+    $('#buseta_empleadosbundle_empleado_fechaNacimiento').datetimepicker({
+        'format': 'DD/MM/YYYY'
+    });
+
+
+    </script>
+
+{% endblock %}

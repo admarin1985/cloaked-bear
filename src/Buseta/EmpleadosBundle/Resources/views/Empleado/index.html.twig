@@ -1,0 +1,46 @@
+{% extends "BusetaEmpleadosBundle::layout.html.twig" %}
+
+{% block title block('header') %}
+
+{% block header 'Listado de Empleados' %}
+
+{% block area_trabajo %}
+
+    <div class="btn-group" style="margin-bottom: 8px;">
+        <a class="btn btn-primary" href="{{ path('empleado_new') }}">
+            <span class="glyphicon glyphicon-plus-sign"></span> {{ 'Adicionar Empleado' }}
+        </a>
+    </div>
+    <table class="records_list table table-striped table-bordered table-condensed table-hover">
+        <thead>
+        <tr>
+            <th>Nombre y Apellidos</th>
+            <th>Cédula</th>
+            <th>Nacionalidad</th>
+            <th>Pin</th>
+            <th>Codigobarras</th>
+            <th>Tipoempleado</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for entity in entities %}
+            <tr>
+                <td>{{ entity.nombreCompleto }}</td>
+                <td>{{ entity.cedula }}</td>
+                <td>{{ entity.nacionalidad }}</td>
+                {# <td>{% if entity.fechaNacimiento %}{{ entity.fechaNacimiento|date('Y-m-d H:i:s') }}{% endif %}</td> #}
+                <td>{{ entity.pin }}</td>
+                <td>{{ entity.codigoBarras }}</td>
+                <td>{{ entity.tipoEmpleado }}</td>
+                <td style="text-align: center;">
+                    <a class="btn btn-success btn-xs" href="{{ path('empleado_show', { 'id': entity.id }) }}">
+                        <span class="glyphicon glyphicon-search"> {{ 'Mostrar' }}</span></a>
+                    <a class="btn btn-danger btn-xs" href="{{ path('empleado_edit', { 'id': entity.id }) }}">
+                        <span class="glyphicon glyphicon-edit"> {{ 'Editar' }}</span></a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
