@@ -1,28 +1,30 @@
 <?php
 
-namespace Buseta\BusesBundle\Tests\Controller;
+namespace Buseta\BodegaBundle\Tests\Controller;
 
-class AutobusControllerTest extends AbstractWebTestCase
+use Buseta\BusesBundle\Tests\Controller\AbstractWebTestCase;
+
+class InformeCostosControllerTest extends AbstractWebTestCase
 {
     public function testIndex()
     {
-        // Test search/list Autobus
-        $crawler = $this->client->request('GET', '/autobus/');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /autobus/");
+        // Test search/list informecostos
+        $crawler = $this->client->request('GET', '/informecostos/');
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /informecostos/");
 
         $this->assertGreaterThan(0, $crawler->filter('a[href$=\'new\']')->count(), 'Missing add new button');
     }
 
     public function testShow()
     {
-        // Test search/list Autobus
-        $crawler = $this->client->request('GET', '/autobus/');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /autobus/");
+        // Test search/list informecostos
+        $crawler = $this->client->request('GET', '/informecostos/');
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /informecostos/");
 
         // Check data in the index view
         $this->assertGreaterThan(0, $crawler->filter('a[href$=\'show\']')->count(), 'Missing elements/test cases');
         $crawler = $this->client->click($crawler->filter('a[href$=\'show\']')->eq(0)->link());
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /autobus/\\d+/show");
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /informecostos/\\d+/show");
 
         // Check buttons in show view
         //$this->checkFunctionalityButtons($crawler, array('Editar', 'Volver', 'Eliminar'), 'Edit');
@@ -30,14 +32,14 @@ class AutobusControllerTest extends AbstractWebTestCase
 
     public function testEdit()
     {
-        // Test search/list Autobus
-        $crawler = $this->client->request('GET', '/autobus/');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /autobus/");
+        // Test search/list informecostos
+        $crawler = $this->client->request('GET', '/informecostos/');
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /informecostos/");
 
         // Check data in the index view
         $this->assertGreaterThan(0, $crawler->filter('a[href$=\'edit\']')->count(), 'Missing elements/test cases');
         $crawler = $this->client->click($crawler->filter('a[href$=\'edit\']')->eq(0)->link());
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /autobus/\\d+/edit");
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /informecostos/\\d+/edit");
 
         // Check buttons in edit view
         //$this->checkFunctionalityButtons($crawler, array('Salvar', 'Volver'), 'Edit');
@@ -45,9 +47,9 @@ class AutobusControllerTest extends AbstractWebTestCase
 
     public function testNew()
     {
-        // Test create Autobus
-        $crawler = $this->client->request('GET', '/autobus/new');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /autobus/new");
+        // Test create informecostos
+        $crawler = $this->client->request('GET', '/informecostos/new');
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /informecostos/new");
 
         //$this->checkFunctionalityButtons($crawler, array('Salvar', 'Volver'), 'New');
     }

@@ -2,27 +2,27 @@
 
 namespace Buseta\BusesBundle\Tests\Controller;
 
-class AutobusControllerTest extends AbstractWebTestCase
+class ChoferControllerTest extends AbstractWebTestCase
 {
     public function testIndex()
     {
-        // Test search/list Autobus
-        $crawler = $this->client->request('GET', '/autobus/');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /autobus/");
+        // Test search/list Chofer
+        $crawler = $this->client->request('GET', '/chofer/');
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /chofer/");
 
         $this->assertGreaterThan(0, $crawler->filter('a[href$=\'new\']')->count(), 'Missing add new button');
     }
 
     public function testShow()
     {
-        // Test search/list Autobus
-        $crawler = $this->client->request('GET', '/autobus/');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /autobus/");
+        // Test search/list chofer
+        $crawler = $this->client->request('GET', '/chofer/');
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /chofer/");
 
         // Check data in the index view
         $this->assertGreaterThan(0, $crawler->filter('a[href$=\'show\']')->count(), 'Missing elements/test cases');
         $crawler = $this->client->click($crawler->filter('a[href$=\'show\']')->eq(0)->link());
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /autobus/\\d+/show");
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /chofer/\\d+/show");
 
         // Check buttons in show view
         //$this->checkFunctionalityButtons($crawler, array('Editar', 'Volver', 'Eliminar'), 'Edit');
@@ -30,14 +30,14 @@ class AutobusControllerTest extends AbstractWebTestCase
 
     public function testEdit()
     {
-        // Test search/list Autobus
-        $crawler = $this->client->request('GET', '/autobus/');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /autobus/");
+        // Test search/list chofer
+        $crawler = $this->client->request('GET', '/chofer/');
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /chofer/");
 
         // Check data in the index view
         $this->assertGreaterThan(0, $crawler->filter('a[href$=\'edit\']')->count(), 'Missing elements/test cases');
         $crawler = $this->client->click($crawler->filter('a[href$=\'edit\']')->eq(0)->link());
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /autobus/\\d+/edit");
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /chofer/\\d+/edit");
 
         // Check buttons in edit view
         //$this->checkFunctionalityButtons($crawler, array('Salvar', 'Volver'), 'Edit');
@@ -45,9 +45,9 @@ class AutobusControllerTest extends AbstractWebTestCase
 
     public function testNew()
     {
-        // Test create Autobus
-        $crawler = $this->client->request('GET', '/autobus/new');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /autobus/new");
+        // Test create chofer
+        $crawler = $this->client->request('GET', '/chofer/new');
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /chofer/new");
 
         //$this->checkFunctionalityButtons($crawler, array('Salvar', 'Volver'), 'New');
     }

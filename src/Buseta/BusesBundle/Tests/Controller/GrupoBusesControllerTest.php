@@ -1,6 +1,6 @@
 <?php
 
-namespace Buseta\BodegaBundle\Tests\Controller;
+namespace Buseta\BusesBundle\Tests\Controller;
 
 use Buseta\BusesBundle\Tests\Controller\AbstractWebTestCase;
 
@@ -8,24 +8,24 @@ class ProveedorControllerTest extends AbstractWebTestCase
 {
     public function testIndex()
     {
-        // Test search/list Proveedor
-        $crawler = $this->client->request('GET', '/bodega/proveedor/');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /bodega/proveedor/");
+        // Test search/list GrupoBuses
+        $crawler = $this->client->request('GET', '/grupobuses/');
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /grupobuses/");
 
         $this->assertGreaterThan(0, $crawler->filter('a[href$=\'new\']')->count(), 'Missing add new button');
     }
 
     public function testShow()
     {
-        // Test search/list Proveedor
-        $crawler = $this->client->request('GET', '/bodega/proveedor/');
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /bodega/proveedor/");
+        // Test search/list GrupoBuses
+        $crawler = $this->client->request('GET', '/grupobuses/');
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /grupobuses/");
 
 
         // Check data in the index view
         $this->assertGreaterThan(0, $crawler->filter('a[href$=\'1\']')->count(), 'Missing elements/test cases');
         $crawler = $this->client->click($crawler->filter('a[href$=\'1\']')->eq(0)->link());
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /proveedor/\\d+");
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /grupobuses/\\d+");
 
 
         // Check buttons in show view
@@ -35,7 +35,7 @@ class ProveedorControllerTest extends AbstractWebTestCase
     public function testEdit()
     {
         // Test search/list Proveedor
-        $crawler = $this->client->request('GET', '/bodega/proveedor/');
+        $crawler = $this->client->request('GET', '/grupobuses/');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /bodega/proveedor/");
 
         // Check data in the index view
