@@ -737,8 +737,8 @@ root:
                   disabled: false
                   attributes: { icon: null }
                   childrens: {  }
-            menu_A_B:
-              id: menu_A_B
+            menu_G_B:
+              id: menu_G_B
               name: null
               label: 'Gestión de accidentes'
               route: null
@@ -749,8 +749,8 @@ root:
               attributes:
                 icon: 'fa fa-ambulance'
               childrens:
-                menu_G_A_B:
-                  id: menu_G_A_B
+                menu_G_B_A:
+                  id: menu_G_B_A
                   name: null
                   label: Accidentes
                   route: accidente
