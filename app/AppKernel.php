@@ -26,12 +26,12 @@ class AppKernel extends Kernel
             new Buseta\TemplateBundle\BusetaTemplateBundle(),
             new Buseta\CombustibleBundle\BusetaCombustibleBundle(),
             new Buseta\TransitoBundle\BusetaTransitoBundle(),
-            new Buseta\NotificacionesBundle\BusetaNotificacionesBundle(),
             new Buseta\EmpleadosBundle\BusetaEmpleadosBundle(),
             new HatueySoft\SecurityBundle\HatueySoftSecurityBundle(),
             new HatueySoft\UploadBundle\HatueySoftUploadBundle(),
             new HatueySoft\SequenceBundle\HatueySoftSequenceBundle(),
             new HatueySoft\MenuBundle\HatueySoftMenuBundle(),
+            new HatueySoft\NotificacionesBundle\HatueySoftNotificacionesBundle(),
             new HatueySoft\DateTimeBundle\HatueySoftDateTimeBundle(),
 
             // extra bundles

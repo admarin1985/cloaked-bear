@@ -14,18 +14,34 @@ class ProveedorFilter extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('codigo', 'text', array(
+                'required' => false,
+                'translation_domain' => 'BusetaBodegaBundle',
+                'label' => 'proveedor.codigo',
+                'attr' => array(
+                    'class' => 'form-control',
+                ),
+            ))
             ->add('alias', 'text', array(
-                'required' => true,
+                'required' => false,
                 'translation_domain' => 'BusetaBodegaBundle',
                 'label' => 'proveedor.alias',
                 'attr' => array(
                     'class' => 'form-control',
                 ),
             ))
-            ->add('nombre', 'text', array(
-                'required' => true,
+            ->add('nombres', 'text', array(
+                'required' => false,
                 'translation_domain' => 'BusetaBodegaBundle',
                 'label' => 'proveedor.nombres',
+                'attr' => array(
+                    'class' => 'form-control',
+                ),
+            ))
+            ->add('apellidos', 'text', array(
+                'required' => false,
+                'translation_domain' => 'BusetaBodegaBundle',
+                'label' => 'proveedor.apellidos',
                 'attr' => array(
                     'class' => 'form-control',
                 ),
