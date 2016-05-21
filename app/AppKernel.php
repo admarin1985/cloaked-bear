@@ -26,12 +26,13 @@ class AppKernel extends Kernel
             new Buseta\TemplateBundle\BusetaTemplateBundle(),
             new Buseta\CombustibleBundle\BusetaCombustibleBundle(),
             new Buseta\TransitoBundle\BusetaTransitoBundle(),
+            new Buseta\NotificacionesBundle\BusetaNotificacionesBundle(),
+            new Buseta\EmpleadosBundle\BusetaEmpleadosBundle(),
             new HatueySoft\SecurityBundle\HatueySoftSecurityBundle(),
             new HatueySoft\UploadBundle\HatueySoftUploadBundle(),
             new HatueySoft\SequenceBundle\HatueySoftSequenceBundle(),
             new HatueySoft\MenuBundle\HatueySoftMenuBundle(),
             new HatueySoft\DateTimeBundle\HatueySoftDateTimeBundle(),
-            new Buseta\NotificacionesBundle\BusetaNotificacionesBundle(),
 
             // extra bundles
             new Knp\Bundle\MenuBundle\KnpMenuBundle(),
@@ -41,7 +42,6 @@ class AppKernel extends Kernel
             new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
             new JavierEguiluz\Bundle\EasyAdminBundle\EasyAdminBundle(),
             new APY\BreadcrumbTrailBundle\APYBreadcrumbTrailBundle(),
-
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

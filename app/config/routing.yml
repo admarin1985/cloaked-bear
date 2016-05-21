@@ -2,6 +2,11 @@ buseta_transito:
     resource: "@BusetaTransitoBundle/Resources/config/routing.yml"
     prefix:   /
 
+buseta_empleados:
+    resource: "@BusetaEmpleadosBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
 buseta_combustible:
     resource: "@BusetaCombustibleBundle/Resources/config/routing.yml"
     prefix:   /

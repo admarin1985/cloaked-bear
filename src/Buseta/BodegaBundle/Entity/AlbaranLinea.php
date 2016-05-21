@@ -41,16 +41,6 @@ class AlbaranLinea implements GeneradorBitacoraInterface
     private $producto;
 
     /**
-     * @var \Buseta\BodegaBundle\Entity\Bodega
-     *
-     * @ORM\ManyToOne(targetEntity="Buseta\BodegaBundle\Entity\Bodega", inversedBy="albaranLinea")
-     * @Assert\NotBlank()
-     *
-     * @deprecated Will be removed
-     */
-    private $almacen;
-
-    /**
      * @var \Buseta\NomencladorBundle\Entity\UOM
      *
      * @ORM\ManyToOne(targetEntity="Buseta\NomencladorBundle\Entity\UOM")
@@ -160,54 +150,6 @@ class AlbaranLinea implements GeneradorBitacoraInterface
     public function getProducto()
     {
         return $this->producto;
-    }
-
-    /**
-     * Set almacen.
-     *
-     * @param \Buseta\BodegaBundle\Entity\Bodega $almacen
-     *
-     * @return AlbaranLinea
-     *
-     * @deprecated Will be removed
-     */
-    public function setAlmacen(\Buseta\BodegaBundle\Entity\Bodega $almacen = null)
-    {
-        $this->almacen = $almacen;
-
-        return $this;
-    }
-
-    /**
-     * Get almacen.
-     *
-     * @return \Buseta\BodegaBundle\Entity\Bodega
-     *
-     * @deprecated Will be removed
-     */
-    public function getAlmacen()
-    {
-        return $this->almacen;
-    }
-
-    /**
-     * @param Bodega $bodega
-     *
-     * @return AlbaranLinea
-     */
-    public function setBodega(\Buseta\BodegaBundle\Entity\Bodega $bodega)
-    {
-        $this->almacen = $bodega;
-
-        return $this;
-    }
-
-    /**
-     * @return Bodega
-     */
-    public function getBodega()
-    {
-        return $this->almacen;
     }
 
     /**

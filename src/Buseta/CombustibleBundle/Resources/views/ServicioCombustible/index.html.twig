@@ -12,6 +12,7 @@
     {% if (filter_form.vars.value.combustible is null or filter_form.vars.value.combustible is empty)
     and (filter_form.vars.value.chofer is null or filter_form.vars.value.chofer is empty)
     and (filter_form.vars.value.vehiculo is null or filter_form.vars.value.vehiculo is empty)
+    and (filter_form.vars.value.estado is null or filter_form.vars.value.estado is empty)
     %}
         {% set display = 'display: none;' %}
         {% set headericon = 'glyphicon-chevron-right' %}
@@ -29,6 +30,7 @@
                 <div class="col-lg-4">{{ form_row(filter_form.combustible) }}</div>
                 <div class="col-lg-4">{{ form_row(filter_form.chofer) }}</div>
                 <div class="col-lg-4">{{ form_row(filter_form.vehiculo) }}</div>
+                <div class="col-lg-4">{{ form_row(filter_form.estado) }}</div>
             </div>
             {{ form_widget(filter_form._token) }}
 
@@ -61,6 +63,7 @@
                 <th>Combustible</th>
                 <th>Cantidad de Libros</th>
                 <th>Fecha</th>
+                <th>Estado</th>
                 <th style="text-align: center;">Acciones</th>
             </tr>
             </thead>
@@ -72,6 +75,21 @@
                     <td>{{ entity.combustible }}</td>
                     <td>{{ entity.cantidadLibros }}</td>
                     <td>{{ entity.fecha | date('d/m/Y h:i a') }}</td>
+                    {% if entity.estado == 'RV' %}
+                        {% set badge = 'success' %}
+                        {% set text_color = 'success' %}
+                    {% elseif entity.estado == 'SV' %}
+                        {% set badge = 'primary' %}
+                        {% set text_color = 'primary' %}
+                    {% endif %}
+                    <td class="text-{{ text_color }}"><span class="label label-{{ badge }}">{{ ('estado.' ~entity.estado) | trans({}, 'BusetaCombustibleBundle') | upper }}</span></td>
+
+                    <td style="width: 24% !important; text-align: center;">
+                        <div class="btn-group">
+                            <a class="btn btn-success btn-xs"
+                               href="{{ path('servicioCombustible_show', { 'id': entity.id }) }}"><span
+                                        class="glyphicon glyphicon-search"> Mostrar</span></a>
+                        </div>
                     <td style="width: 20% !important; text-align: center;">
                         <a class="btn btn-success btn-xs"
                            href="{{ path('servicioCombustible_show', { 'id': entity.id }) }}"><span

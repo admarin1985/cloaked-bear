@@ -1,0 +1,20 @@
+{% extends "BusetaEmpleadosBundle::layout.html.twig" %}
+
+{% block title block('header') %}
+
+{% block header 'Modificar Empleado' %}
+
+{% block area_trabajo %}
+
+    {% include '@BusetaEmpleados/Empleado/form_template.html.twig' with {'form': edit_form} %}
+
+{% endblock area_trabajo %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset('bundles/busetaempleados/js/empleado.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var empleado = new TallerApp.Empleados.empleado('{{ edit_form.vars.id }}');
+        });
+    </script>
+{% endblock %}
