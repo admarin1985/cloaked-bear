@@ -41,6 +41,7 @@ class BitacoraInventarioFisicoEvent extends AbstractBitacoraEvent
                 /** @var InventarioFisicoLinea $inventarioFisicoLinea */
                 $bitacoraEvent = new BitacoraEventModel();
                 $bitacoraEvent->setProduct($inventarioFisicoLinea->getProducto());
+                $bitacoraEvent->setPrecioUnitario($inventarioFisicoLinea->getPrecioUnitario());
                 $bitacoraEvent->setWarehouse($inventarioFisico->getAlmacen());
                 $bitacoraEvent->setMovementQty(abs($movementQty));
                 $bitacoraEvent->setMovementDate(new \DateTime());

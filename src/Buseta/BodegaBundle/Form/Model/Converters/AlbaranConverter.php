@@ -57,7 +57,8 @@ class AlbaranConverter
                 /** @var PedidoCompraLinea $linea */
                 $albaranLinea = new AlbaranLinea();
                 $albaranLinea->setProducto($linea->getProducto());
-                $albaranLinea->setBodega($pedidoCompra->getBodega());
+                $albaranLinea->setPrecioUnitario($linea->getPrecioUnitario());
+                //$albaranLinea->setBodega($pedidoCompra->getBodega());
                 $albaranLinea->setCantidadMovida($linea->getCantidadPedido());
                 $albaranLinea->setUom($linea->getUom());
 

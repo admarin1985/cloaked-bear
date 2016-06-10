@@ -43,9 +43,17 @@ class AlbaranLineaType extends AbstractType
                 'attr' => array(
                     'class' => 'form-control',
                 ),
+
             ))->add('seriales', 'textarea', array(
                 'required' => false,
                 'label' => 'Seriales',
+                'attr' => array(
+                    'class' => 'form-control',
+                ),
+            ))->add('precio_unitario', 'number', array(
+                'required' => true,
+                'scale' => 2,
+                'label' => 'Costo unitario',
                 'attr' => array(
                     'class' => 'form-control',
                 ),

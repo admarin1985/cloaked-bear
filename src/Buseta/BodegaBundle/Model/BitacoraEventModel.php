@@ -17,6 +17,11 @@ class BitacoraEventModel
     private $warehouse;
 
     /**
+     * @var \Buseta\BodegaBundle\Entity\Bodega
+     */
+    private $fromWarehouse;
+
+    /**
      * @var \Buseta\BodegaBundle\Entity\Producto
      *
      * @Assert\NotNull()
@@ -43,6 +48,11 @@ class BitacoraEventModel
      * @var integer
      */
     private $quantityOrder;
+
+    /**
+     * @var float
+     */
+    private $precioUnitario;
 
     /**
      * @var string
@@ -84,6 +94,22 @@ class BitacoraEventModel
     public function setWarehouse($warehouse)
     {
         $this->warehouse = $warehouse;
+    }
+
+    /**
+     * @return \Buseta\BodegaBundle\Entity\Bodega
+     */
+    public function getFromWarehouse()
+    {
+        return $this->fromWarehouse;
+    }
+
+    /**
+     * @param \Buseta\BodegaBundle\Entity\Bodega $fromWarehouse
+     */
+    public function setFromWarehouse($fromWarehouse)
+    {
+        $this->fromWarehouse = $fromWarehouse;
     }
 
     /**
@@ -132,6 +158,22 @@ class BitacoraEventModel
     public function setMovementQty($movementQty)
     {
         $this->movementQty = $movementQty;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPrecioUnitario()
+    {
+        return $this->precioUnitario;
+    }
+
+    /**
+     * @param float $precioUnitario
+     */
+    public function setPrecioUnitario($precioUnitario)
+    {
+        $this->precioUnitario = $precioUnitario;
     }
 
     /**

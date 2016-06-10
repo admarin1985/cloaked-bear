@@ -106,12 +106,15 @@ class FuncionesExtras
                 foreach ($bitacoras as $bitacora) {
                     /** @var \Buseta\BodegaBundle\Entity\BitacoraAlmacen $bitacora */
                     if ($producto == $bitacora->getProducto() && $bitacora->getAlmacen() == $almacen) {
-                        //Identifico el tipoMovimiento (NO SE HA IMPLEMENTADO COMPLETAMENTE AÚN)
                         if ($this->movementTypeComparePlus($bitacora->getTipoMovimiento())) {
-                            $cantidadPedido += $bitacora->getCantidadMovida();
-                        }
-                        if ($this->movementTypeCompareMinus($bitacora->getTipoMovimiento())) {
-                            $cantidadPedido -= $bitacora->getCantidadMovida();
+                            $inputs = $em->getRepository('BusetaBodegaBundle:InputStack')->findBy(array(
+                                'bitacora' => $bitacora
+                            ));
+                            foreach ($inputs as $input) {
+                                if($input->getRemainingQuantity() > 0){
+                                    $cantidadPedido += $input->getRemainingQuantity();
+                                }
+                            }
                         }
                     }
                 }
@@ -155,10 +158,14 @@ class FuncionesExtras
             //Identifico el tipoMovimiento (NO SE HA IMPLEMENTADO COMPLETAMENTE AÚN)
             $existe = true;
             if ($this->movementTypeComparePlus($bitacora->getTipoMovimiento())) {
-                $cantidadPedido += $bitacora->getCantidadMovida();
-            }
-            if ($this->movementTypeCompareMinus($bitacora->getTipoMovimiento())) {
-                $cantidadPedido -= $bitacora->getCantidadMovida();
+                $inputs = $em->getRepository('BusetaBodegaBundle:InputStack')->findBy(array(
+                    'bitacora' => $bitacora
+                ));
+                foreach ($inputs as $input) {
+                    if($input->getRemainingQuantity() > 0){
+                        $cantidadPedido += $input->getRemainingQuantity();
+                    }
+                }
             }
             //}
         }
@@ -169,6 +176,42 @@ class FuncionesExtras
 
         //
         return 'No existe';
+    }
+
+    public function getEntradasDisponiblesProductoBodegaFIFO($producto, $almacen, $cantidad, $movementType, $em)
+    {
+        /**@var \Doctrine\Common\Persistence\ObjectManager $em */
+
+        $cantidadRestante = $cantidad;
+        $inputs = $em->getRepository('BusetaBodegaBundle:InputStack')->inputsProductoBodega($producto, $almacen);
+        $result = array();
+        foreach ($inputs as $input) {
+            if($cantidadRestante > 0){
+                if($input->getRemainingQuantity()-$cantidadRestante >= 0){
+                    $entrada = array();
+                    $entrada['costo'] = $input->getBitacora()->getPrecioUnitario();
+                    $entrada['cantidad'] = $cantidadRestante;
+                    $entrada['inputStack'] = $input;
+                    if ($this->movementTypeCompareMinus($movementType)){
+                        $input->setRemainingQuantity($input->getRemainingQuantity()-$cantidadRestante);
+                    }
+                    $result[] = $entrada;
+                    break;
+                }
+                else{
+                    $cantidadRestante -= $input->getRemainingQuantity();
+                    $entrada = array();
+                    $entrada['costo'] = $input->getBitacora()->getPrecioUnitario();;
+                    $entrada['cantidad'] = $input->getRemainingQuantity();
+                    $entrada['inputStack'] = $input;
+                    if ($this->movementTypeCompareMinus($movementType)){
+                        $input->setRemainingQuantity(0);
+                    }
+                    $result[] = $entrada;
+                }
+            }
+        }
+        return $result;
     }
 
     public function comprobarCantProductoSeriadoAlmacen($producto, $serial, $almacen, $em)
@@ -380,20 +423,17 @@ class FuncionesExtras
                 foreach ($bitacoras as $bitacora) {
                     /** @var \Buseta\BodegaBundle\Entity\BitacoraAlmacen $bitacora */
                     if ($producto == $bitacora->getProducto() && $bitacora->getAlmacen() == $almacen) {
-                        //Identifico el tipoMovimiento (NO SE HA IMPLEMENTADO COMPLETAMENTE AÚN)
                         if ($this->movementTypeComparePlus($bitacora->getTipoMovimiento())) {
-                            $cantidadPedido += $bitacora->getCantidadMovida();
-                        }
-                        if ($this->movementTypeCompareMinus($bitacora->getTipoMovimiento())){
-                            $cantidadPedido -= $bitacora->getCantidadMovida();
-                        }
-
-                        foreach ($producto->getCostoProducto() as $costos) {
-                            if ($costos->getActivo()) {
-                                $costoProducto = ($costos->getCosto());
+                            $inputs = $em->getRepository('BusetaBodegaBundle:InputStack')->findBy(array(
+                                'bitacora' => $bitacora
+                            ));
+                            foreach ($inputs as $input) {
+                                if($input->getRemainingQuantity() > 0){
+                                    $cantidadPedido += $input->getRemainingQuantity();
+                                    $costos += $input->getRemainingQuantity() * $bitacora->getPrecioUnitario();
+                                }
                             }
                         }
-                        $costos = $cantidadPedido * $costoProducto;
                     }
                 }
 
@@ -429,19 +469,16 @@ class FuncionesExtras
         ));
 
         foreach ($bitacoras as $bitacora) {
-            /** @var \Buseta\BodegaBundle\Entity\BitacoraAlmacen $bitacora */
-            //Si se encuentra en la bitácora el almacen y producto seleccionado
-            //if ($bitacora->getAlmacen() == $almacen && $bitacora->getProducto() == $producto) {
-                //$existe = true;
-                //Comprobar tipo de movimiento para realizar operación de sustracción o adición
-                //Identifico el tipoMovimiento (NO SE HA IMPLEMENTADO COMPLETAMENTE AÚN)
-                if ($this->movementTypeComparePlus($bitacora->getTipoMovimiento())) {
-                    $cantidadReal += $bitacora->getCantidadMovida();
+            if ($this->movementTypeComparePlus($bitacora->getTipoMovimiento())) {
+                $inputs = $em->getRepository('BusetaBodegaBundle:InputStack')->findBy(array(
+                    'bitacora' => $bitacora
+                ));
+                foreach ($inputs as $input) {
+                    if($input->getRemainingQuantity() > 0){
+                        $cantidadReal += $input->getRemainingQuantity();
+                    }
                 }
-                if ($this->movementTypeCompareMinus($bitacora->getTipoMovimiento())) {
-                    $cantidadReal -= $bitacora->getCantidadMovida();
-                }
-            //}
+            }
         }
 
         return $cantidadReal;
@@ -473,7 +510,7 @@ class FuncionesExtras
      *
      * @return bool
      */
-    private function movementTypeComparePlus($tipoMovimiento)
+    public function movementTypeComparePlus($tipoMovimiento)
     {
         return $tipoMovimiento === BusetaBodegaMovementTypes::VENDOR_RECEIPTS
         || $tipoMovimiento === BusetaBodegaMovementTypes::MOVEMENT_TO
@@ -489,7 +526,7 @@ class FuncionesExtras
      *
      * @return bool
      */
-    private function movementTypeCompareMinus($tipoMovimiento)
+    public function movementTypeCompareMinus($tipoMovimiento)
     {
         return $tipoMovimiento === BusetaBodegaMovementTypes::VENDOR_RETURNS
         || $tipoMovimiento === BusetaBodegaMovementTypes::MOVEMENT_FROM

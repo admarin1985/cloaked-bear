@@ -78,7 +78,7 @@ class Marchamo2ValidoValidator extends ConstraintValidator
             $marchamoProduct = $confMarchamo->getProducto();
             $bodega = $confMarchamo->getBodega();
             $result = $bodegaChecker->comprobarCantProductoAlmacen($marchamoProduct, $bodega, 1, $this->em);
-            if ($result === 'No existe' || $result <= 0) {
+            if ($result === 'No existe' || $result < 0) {
                 $this->context->buildViolation($constraint->messageCantidad)
                     ->atPath('marchamo2')
                     ->addViolation();

@@ -41,6 +41,13 @@ class AlbaranLinea implements GeneradorBitacoraInterface
     private $producto;
 
     /**
+     * @var float
+     *
+     * @ORM\Column(name="precio_unitario", type="decimal", scale=2)
+     */
+    private $precioUnitario = 0;
+
+    /**
      * @var \Buseta\NomencladorBundle\Entity\UOM
      *
      * @ORM\ManyToOne(targetEntity="Buseta\NomencladorBundle\Entity\UOM")
@@ -150,6 +157,30 @@ class AlbaranLinea implements GeneradorBitacoraInterface
     public function getProducto()
     {
         return $this->producto;
+    }
+
+    /**
+     * Set precioUnitario.
+     *
+     * @param float $precioUnitario
+     *
+     * @return AlbaranLinea
+     */
+    public function setPrecioUnitario($precioUnitario)
+    {
+        $this->precioUnitario = $precioUnitario;
+
+        return $this;
+    }
+
+    /**
+     * Get precioUnitario.
+     *
+     * @return float
+     */
+    public function getPrecioUnitario()
+    {
+        return $this->precioUnitario;
     }
 
     /**

@@ -472,9 +472,10 @@ VALUES (%d, %d, \'%s\', \'%s\', %d, \'%s\', \'%s\')',
                     $sql = $this->getBitacoraSerialInsertQuery();
                 }
             }
-
-            $stmt = $this->em->getConnection()->prepare($sql);
-            $stmt->execute();
+            if($count > 0){
+                $stmt = $this->em->getConnection()->prepare($sql);
+                $stmt->execute();
+            }
 
             return true;
         } catch (\Exception $e) {

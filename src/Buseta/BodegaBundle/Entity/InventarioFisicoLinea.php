@@ -39,6 +39,13 @@ class InventarioFisicoLinea implements GeneradorBitacoraInterface
     private $producto;
 
     /**
+     * @var float
+     *
+     * @ORM\Column(name="precio_unitario", type="decimal", scale=2)
+     */
+    private $precioUnitario = 0;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="cantidadReal", type="integer")
@@ -168,6 +175,30 @@ class InventarioFisicoLinea implements GeneradorBitacoraInterface
     public function getProducto()
     {
         return $this->producto;
+    }
+
+    /**
+     * Set precioUnitario.
+     *
+     * @param float $precioUnitario
+     *
+     * @return InventarioFisicoLinea
+     */
+    public function setPrecioUnitario($precioUnitario)
+    {
+        $this->precioUnitario = $precioUnitario;
+
+        return $this;
+    }
+
+    /**
+     * Get precioUnitario.
+     *
+     * @return float
+     */
+    public function getPrecioUnitario()
+    {
+        return $this->precioUnitario;
     }
 
     /**

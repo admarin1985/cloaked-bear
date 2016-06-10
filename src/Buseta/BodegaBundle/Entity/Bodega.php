@@ -73,13 +73,6 @@ class Bodega
     /**
      * @var \Doctrine\Common\Collections\ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="Buseta\BodegaBundle\Entity\AlbaranLinea", mappedBy="almacen", cascade={"all"})
-     */
-    private $albaranLinea;
-
-    /**
-     * @var \Doctrine\Common\Collections\ArrayCollection
-     *
      * @ORM\OneToMany(targetEntity="Buseta\BodegaBundle\Entity\Albaran", mappedBy="almacen", cascade={"all"})
      */
     private $albaran;

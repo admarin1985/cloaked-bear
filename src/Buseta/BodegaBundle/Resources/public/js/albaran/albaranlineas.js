@@ -82,9 +82,11 @@ var
                 $('div#form_lineas_modal').modal('hide');
             });
 
+            $('#actualizar_productos').off('click');
+            $('#actualizar_productos').on('click', lineas._get_product_data);
+
             $('#' + lineas.form_id + '_producto').off('change').on('change', function () {
-                producto.findUOM();
-                producto.hasSerial();
+                lineas._get_product_data();
             });
             producto.findUOM();
             producto.hasSerial();
@@ -242,6 +244,59 @@ var
                 .removeClass('fa')
                 .removeClass('fa-gear')
                 .removeClass('fa-spin');
+        },
+        _get_product_data: function() {
+            var producto_id = $('#' + lineas.form_id + '_producto').val();
+
+            producto.findUOM();
+            producto.hasSerial();
+
+            $.getJSON(Routing.generate('productos_get_product_data', {'id': producto_id}), function (data) {
+                var tbody = 'table#producto_proveedores_results_list',
+                    _producto, span, provider, code, cost, select, tr, count = 0;
+
+                $(tbody).find('tr[data-content]').remove();
+
+                $.each(data.costos, function(id, costo) {
+                    if (costo.proveedor != undefined) {
+                        provider    = $('<td>')
+                            .text(costo.proveedor.nombre)
+                            .append($('<input>', {
+                                type: 'hidden',
+                                value: costo.proveedor.id
+                            }));
+                    } else {
+                        provider = $('<td>').text('-');
+                    }
+
+                    code = $('<td>').text(costo.codigo != undefined ? costo.codigo : '-');
+                    cost = $('<td>', {'data-action':'#edit', 'data-content': id}).text(costo.costo);
+                    select = $('<td>', {class: 'text-center', style: 'width: 1%;' })
+                        .html('<a href="#cost" title="Seleccionar"><span class="fa fa-check"></span></a>');
+
+                    tr = $('<tr>',{'data-content': true});
+                    tr.append(provider)
+                        .append(code)
+                        .append(cost)
+                        .append(select);
+
+                    $(tbody).append(tr);
+                    count++;
+                });
+                count > 0 ? $(tbody).show() : $(tbody).hide();
+                $(tbody).find('a[href="#cost"]').on('click', lineas._select_product_cost);
+            });
+        },
+        _select_product_cost: function (event){
+            event.preventDefault();
+
+            var $this = $(this),
+                costo = $this.parent().prev().text();
+
+            if (costo != undefined && costo != null) {
+                $('#' + lineas.form_id + '_precio_unitario').val(costo);
+                $('#' + lineas.form_id + '_precio_unitario').trigger('change');
+            }
         }
     },
 

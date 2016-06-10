@@ -68,6 +68,14 @@ class BitacoraAlmacen implements DateTimeAwareInterface
     private $producto;
 
     /**
+     * @var float
+     *
+     * @ORM\Column(name="precio_unitario", type="decimal", scale=2)
+     * @Assert\NotBlank()
+     */
+    private $precioUnitario;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="movement_date", type="datetime")
@@ -410,6 +418,30 @@ class BitacoraAlmacen implements DateTimeAwareInterface
     public function getProducto()
     {
         return $this->producto;
+    }
+
+    /**
+     * Set precioUnitario.
+     *
+     * @param float $precioUnitario
+     *
+     * @return BitacoraAlmacen
+     */
+    public function setPrecioUnitario($precioUnitario)
+    {
+        $this->precioUnitario = $precioUnitario;
+
+        return $this;
+    }
+
+    /**
+     * Get precioUnitario.
+     *
+     * @return float
+     */
+    public function getPrecioUnitario()
+    {
+        return $this->precioUnitario;
     }
 
     /**

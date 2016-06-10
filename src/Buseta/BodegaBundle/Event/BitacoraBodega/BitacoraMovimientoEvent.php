@@ -38,6 +38,7 @@ class BitacoraMovimientoEvent extends AbstractBitacoraEvent
                 $bitacoraEventTo = new BitacoraEventModel();
                 $bitacoraEventTo->setProduct($movimientoLinea->getProducto());
                 $bitacoraEventTo->setWarehouse($movimiento->getAlmacenDestino());
+                $bitacoraEventTo->setFromWarehouse($movimiento->getAlmacenOrigen());
                 $bitacoraEventTo->setMovementQty($movimientoLinea->getCantidad());
                 $bitacoraEventTo->setMovementDate(new \DateTime());
                 $bitacoraEventTo->setMovementType(BusetaBodegaMovementTypes::MOVEMENT_TO);
@@ -50,6 +51,7 @@ class BitacoraMovimientoEvent extends AbstractBitacoraEvent
                 $bitacoraEventFrom = new BitacoraEventModel();
                 $bitacoraEventFrom->setProduct($movimientoLinea->getProducto());
                 $bitacoraEventFrom->setWarehouse($movimiento->getAlmacenOrigen());
+                $bitacoraEventFrom->setFromWarehouse(null);
                 $bitacoraEventFrom->setMovementQty($movimientoLinea->getCantidad());
                 $bitacoraEventFrom->setMovementDate(new \DateTime());
                 $bitacoraEventFrom->setMovementType(BusetaBodegaMovementTypes::MOVEMENT_FROM);

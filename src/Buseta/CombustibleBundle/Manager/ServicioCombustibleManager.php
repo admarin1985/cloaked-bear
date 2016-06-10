@@ -93,6 +93,7 @@ class ServicioCombustibleManager
         $servicioCombustible->setCantidadLibros($model->getCantidadLibros());
         $servicioCombustible->setMarchamo1($model->getMarchamo1());
         $servicioCombustible->setMarchamo2($model->getMarchamo2());
+        $servicioCombustible->setOdometro($model->getOdometro());
         $servicioCombustible->setFecha($fechaSistema);
 
         if ($model->getCombustible() !== null) {

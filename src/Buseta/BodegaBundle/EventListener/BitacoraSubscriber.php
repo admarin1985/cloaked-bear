@@ -8,6 +8,7 @@ use Buseta\BodegaBundle\Event\BitacoraBodega\BitacoraEventInterface;
 use Buseta\BodegaBundle\Event\BitacoraSerial\BitacoraSerialAlbaranEvent;
 use Buseta\BodegaBundle\Event\BitacoraSerial\BitacoraSerialInventarioFisicoEvent;
 use Buseta\BodegaBundle\Event\BitacoraSerial\BitacoraSerialMovimientoEvent;
+use Buseta\BodegaBundle\Event\BitacoraSerial\BitacoraSerialSalidaBodegaEvent;
 use Buseta\BodegaBundle\Event\LegacyBitacoraEvent;
 use Buseta\BodegaBundle\Exceptions\NotValidBitacoraTypeException;
 use Buseta\BodegaBundle\Manager\BitacoraAlmacenManager;
@@ -83,15 +84,15 @@ class BitacoraSubscriber implements EventSubscriberInterface
         $this->createRegistry($event);
         if (!$event->getError()) {
             switch (ClassUtils::getRealClass($event)) {
-                case '\Buseta\BodegaBundle\Event\BitacoraBodega\BitacoraSalidaBodegaEvent': {
-                    $serialEvent = new BitacoraSerialInventarioFisicoEvent($event);
+                case 'Buseta\BodegaBundle\Event\BitacoraBodega\BitacoraSalidaBodegaEvent': {
+                    $serialEvent = new BitacoraSerialSalidaBodegaEvent($event);
                     $eventDispatcher->dispatch(BusetaBodegaEvents::BITACORA_SERIAL_REGISTER_EVENTS, $serialEvent);
                     if ($serialEvent->getError()) {
                         $event->setError($serialEvent->getError());
                     }
                     break;
                 }
-                case '\Buseta\CombustibleBundle\Event\BitacoraBodega\BitacoraServicioCombustibleEvent': {
+                case 'Buseta\CombustibleBundle\Event\BitacoraBodega\BitacoraServicioCombustibleEvent': {
                     $serialEvent = new BitacoraSerialServicioCombustibleEvent($event);
                     $eventDispatcher->dispatch(BusetaBodegaEvents::BITACORA_SERIAL_REGISTER_EVENTS, $serialEvent);
                     if ($serialEvent->getError()) {
